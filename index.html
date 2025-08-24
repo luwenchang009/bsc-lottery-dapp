@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BSC测试网彩票DApp</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #1e2026;
+            color: #eaecef;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #0c0f12;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            font-size: 48px;
+            font-weight: bold;
+            color: #f3ba2f;
+            margin-bottom: 15px;
+        }
+        h1 {
+            color: #f3ba2f;
+            margin-bottom: 10px;
+        }
+        .wallet-section, .lottery-info, .bet-section {
+            background-color: #1e2026;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid #2a2d35;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background-color: #f3ba2f;
+            color: #0c0f12;
+        }
+        .btn-primary:hover {
+            background-color: #e0a91c;
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background-color: transparent;
+            border: 2px solid #f3ba2f;
+            color: #f3ba2f;
+        }
+        .btn-secondary:hover {
+            background-color: rgba(243, 186, 47, 0.1);
+        }
+        input {
+            padding: 12px;
+            border: 1px solid #2a2d35;
+            border-radius: 8px;
+            background-color: #0c0f12;
+            color: #eaecef;
+            margin: 10px 0;
+            width: 200px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 20px;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .connected {
+            background-color: rgba(0, 200, 83, 0.2);
+            color: #00c853;
+        }
+        .disconnected {
+            background-color: rgba(255, 59, 48, 0.2);
+            color: #ff3b30;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">🎰</div>
+            <h1>BSC测试网彩票</h1>
+            <p>每5分钟开奖，猜中三位数赢取奖金！</p>
+        </header>
+
+        <div class="wallet-section">
+            <h2>连接钱包</h2>
+            <p>请连接您的钱包参与游戏（支持MetaMask、TokenPocket等）</p>
+            
+            <div id="wallet-status" class="status disconnected">未连接钱包</div>
+            
+            <div class="wallet-buttons">
+                <button class="btn btn-primary" onclick="connectMetamask()">MetaMask</button>
+                <button class="btn btn-secondary" onclick="connectWalletConnect()">WalletConnect</button>
+                <button class="btn btn-secondary" onclick="connectTP()">TokenPocket</button>
+            </div>
+            
+            <div id="account-info" style="display: none; margin-top: 20px;">
+                <p>已连接账户: <span id="account-address"></span></p>
+                <p>余额: <span id="account-balance">0</span> BNB</p>
+            </div>
+        </div>
+
+        <div class="lottery-info">
+            <h2>本期彩票</h2>
+            <p>当前轮次: <span id="current-round">1</span></p>
+            <p>投注价格: <span id="ticket-price">0.001</span> BNB</p>
+            <p>上期获奖号码: <span id="last-winning-number">暂无</span></p>
+            <div class="timer">下次开奖: <span id="countdown">05:00</span></div>
+        </div>
+
+        <div class="bet-section">
+            <h2>参与投注</h2>
+            <input type="number" id="bet-number" min="0" max="999" placeholder="输入三位数(0-999)">
+            <button class="btn btn-primary" onclick="placeBet()">投注</button>
+            
+            <div style="margin-top: 15px;">
+                <button class="btn btn-secondary" onclick="generateRandomNumber()">随机数</button>
+                <button class="btn btn-secondary" onclick="checkWinnings()">检查中奖</button>
+            </div>
+            
+            <div id="transaction-status" class="status" style="display: none; margin-top: 20px;">
+                <h3>交易状态</h3>
+                <p>状态: <span id="status-text">处理中...</span></p>
+                <p>交易哈希: <span id="tx-hash">-</span></p>
+            </div>
+        </div>
+
+        <div class="winners-section" style="background-color: #1e2026; padding: 25px; border-radius: 12px;">
+            <h2>最近获奖者</h2>
+            <p>暂无获奖记录</p>
+        </div>
+    </div>
+
+    <script>
+        // 钱包连接功能
+        async function connectMetamask() {
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ 
+                        method: 'eth_requestAccounts' 
+                    });
+                    const account = accounts[0];
+                    
+                    document.getElementById('wallet-status').textContent = '已连接MetaMask';
+                    document.getElementById('wallet-status').className = 'status connected';
+                    document.getElementById('account-address').textContent = 
+                        account.substring(0, 6) + '...' + account.substring(account.length - 4);
+                    document.getElementById('account-info').style.display = 'block';
+                    
+                    // 获取余额
+                    const balance = await window.ethereum.request({
+                        method: 'eth_getBalance',
+                        params: [account, 'latest']
+                    });
+                    document.getElementById('account-balance').textContent = 
+                        (parseInt(balance) / 1e18).toFixed(4);
+                        
+                } catch (error) {
+                    alert('连接失败: ' + error.message);
+                }
+            } else {
+                alert('请安装MetaMask钱包!');
+            }
+        }
+
+        function connectWalletConnect() {
+            alert('WalletConnect功能即将推出！');
+        }
+
+        function connectTP() {
+            if (typeof window.ethereum !== 'undefined') {
+                connectMetamask();
+            } else if (typeof window.tokenpocket !== 'undefined') {
+                alert('TokenPocket检测到，请使用应用内浏览器打开');
+            } else {
+                alert('请使用TokenPocket应用内浏览器访问');
+            }
+        }
+
+        function placeBet() {
+            const betNumber = document.getElementById('bet-number').value;
+            if (!betNumber || betNumber < 0 || betNumber > 999) {
+                alert('请输入有效的三位数(0-999)');
+                return;
+            }
+            alert('投注数字: ' + betNumber.padStart(3, '0') + '\n完整功能需要合约连接');
+        }
+
+        function generateRandomNumber() {
+            const randomNum = Math.floor(Math.random() * 1000);
+            document.getElementById('bet-number').value = randomNum;
+        }
+
+        function checkWinnings() {
+            alert('中奖检查功能需要合约连接');
+        }
+
+        // 倒计时功能
+        function startCountdown() {
+            let timeLeft = 5 * 60;
+            const timer = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('countdown').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (--timeLeft < 0) {
+                    clearInterval(timer);
+                    document.getElementById('countdown').textContent = "开奖中...";
+                    setTimeout(() => {
+                        timeLeft = 5 * 60;
+                        startCountdown();
+                    }, 3000);
+                }
+            }, 1000);
+        }
+
+        // 页面加载时启动倒计时
+        window.addEventListener('load', startCountdown);
+    </script>
+</body>
+</html>
