@@ -1,6 +1,6 @@
 console.log("BSC Lottery DApp loaded");
 
-// 合约配置 - 这里已经为您填好了！
+// 合约配置
 const CONTRACT_ADDRESS = "0x929B981d71D591DbC88c1a67601f2368c7511537";
 const CONTRACT_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"better","type":"address"},{"indexed":false,"internalType":"uint256","name":"round","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"number","type":"uint256"}],"name":"NewBet","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"round","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"winningNumber","type":"uint256"}],"name":"RoundCompleted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"winner","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Winner","type":"event"},{"inputs":[],"name":"ROUND_DURATION","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"TICKET_PRICE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"},{"internalType":"uint256","name":"","type":"uint256"}],"name":"bets","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_number","type":"uint256"}],"name":"bet","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"completeRound","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"generateRandomNumber","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getLastWinningNumber","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastRoundTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"round","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"roundCompleted","outputs":[{"internalType":"boolean","name":"","type":"boolean"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"roundWinningNumbers","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"winningNumber","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
@@ -43,7 +43,6 @@ async function connectMetamask() {
             document.getElementById('ticket-price').textContent = (ticketPrice / 1e18) + ' BNB';
             
             console.log("钱包连接成功:", userAccount);
-            alert('钱包连接成功！可以开始投注了');
             
         } catch (error) {
             console.error("连接失败:", error);
@@ -110,7 +109,6 @@ async function placeBet() {
 function generateRandomNumber() {
     const randomNum = Math.floor(Math.random() * 1000);
     document.getElementById('bet-number').value = randomNum;
-    alert('生成随机数: ' + randomNum);
 }
 
 function checkWinnings() {
@@ -121,7 +119,8 @@ function checkWinnings() {
 function startCountdown() {
     let timeLeft = 5 * 60;
     const countdownElement = document.getElementById('countdown');
-    const timer = setInterval(() => {
+    
+    function updateCountdown() {
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
         
@@ -129,15 +128,17 @@ function startCountdown() {
             `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         
         if (--timeLeft < 0) {
-            clearInterval(timer);
             countdownElement.textContent = "开奖中...";
             setTimeout(() => {
-                alert('开奖完成！请检查是否中奖');
                 timeLeft = 5 * 60;
-                startCountdown();
+                updateCountdown();
             }, 3000);
+        } else {
+            setTimeout(updateCountdown, 1000);
         }
-    }, 1000);
+    }
+    
+    updateCountdown();
 }
 
 // 页面加载时初始化
@@ -149,18 +150,12 @@ window.addEventListener('load', function() {
     if (window.ethereum) {
         window.ethereum.on('accountsChanged', function(accounts) {
             if (accounts.length === 0) {
-                console.log("用户断开钱包连接");
                 document.getElementById('wallet-status').textContent = '未连接钱包';
                 document.getElementById('wallet-status').className = 'status disconnected';
                 document.getElementById('account-info').style.display = 'none';
                 userAccount = null;
                 lotteryContract = null;
             }
-        });
-        
-        window.ethereum.on('chainChanged', function(chainId) {
-            // 网络切换时重新加载页面
-            window.location.reload();
         });
     }
 });
