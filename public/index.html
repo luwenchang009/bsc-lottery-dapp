@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BSC测试网彩票DApp</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>BSC测试网彩票</h1>
+            <p>每5分钟开奖，猜中三位数赢取奖金！</p>
+        </header>
+
+        <div class="wallet-section">
+            <button id="connectWallet">连接钱包</button>
+            <div id="walletInfo" style="display: none;">
+                <p>已连接: <span id="walletAddress"></span></p>
+                <p>余额: <span id="walletBalance">0</span> BNB</p>
+            </div>
+        </div>
+
+        <div class="lottery-info">
+            <h2>当前轮次: <span id="currentRound">1</span></h2>
+            <p>投注价格: <span id="ticketPrice">0.001</span> BNB</p>
+            <p>上期获奖号码: <span id="lastWinningNumber">暂无</span></p>
+        </div>
+
+        <div class="bet-section">
+            <h3>参与投注</h3>
+            <input type="number" id="betNumber" min="0" max="999" placeholder="输入三位数(0-999)">
+            <button id="placeBet">投注</button>
+            
+            <!-- 添加交易状态显示 -->
+            <div id="transactionStatus" style="display: none; margin-top: 20px; padding: 15px; border-radius: 8px; background: #f8f9fa;">
+                <h4>交易状态</h4>
+                <p>状态: <span id="statusText">处理中...</span></p>
+                <p>交易哈希: <span id="txHash">-</span></p>
+                <p>区块确认: <span id="blockConfirmations">0</span></p>
+            </div>
+        </div>
+
+        <div class="countdown-section">
+            <h3>下次开奖倒计时</h3>
+            <div id="countdown">05:00</div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.6.0/dist/web3.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
