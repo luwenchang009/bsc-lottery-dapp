@@ -1,0 +1,162 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #1e2026;
+    color: #eaecef;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #0c0f12;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #2a2d35;
+}
+
+.logo {
+    font-size: 48px;
+    font-weight: bold;
+    color: #f3ba2f;
+    margin-bottom: 15px;
+}
+
+h1, h2, h3 {
+    color: #f3ba2f;
+    margin-bottom: 15px;
+}
+
+.wallet-section, .lottery-info, .bet-section {
+    background-color: #1e2026;
+    padding: 25px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    border: 1px solid #2a2d35;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    margin: 5px;
+    transition: all 0.3s;
+    font-size: 16px;
+}
+
+.btn-primary {
+    background-color: #f3ba2f;
+    color: #0c0f12;
+}
+
+.btn-primary:hover {
+    background-color: #e0a91c;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 2px solid #f3ba2f;
+    color: #f3ba2f;
+}
+
+.btn-secondary:hover {
+    background-color: rgba(243, 186, 47, 0.1);
+}
+
+input {
+    padding: 12px 15px;
+    border: 1px solid #2a2d35;
+    border-radius: 8px;
+    background-color: #0c0f12;
+    color: #eaecef;
+    margin: 10px 0;
+    width: 200px;
+    font-size: 16px;
+}
+
+.status {
+    padding: 12px 20px;
+    border-radius: 20px;
+    margin: 15px 0;
+    text-align: center;
+    font-weight: bold;
+}
+
+.connected {
+    background-color: rgba(0, 200, 83, 0.2);
+    color: #00c853;
+    border: 1px solid #00c853;
+}
+
+.disconnected {
+    background-color: rgba(255, 59, 48, 0.2);
+    color: #ff3b30;
+    border: 1px solid #ff3b30;
+}
+
+.timer {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #f3ba2f;
+    margin-top: 20px;
+    padding: 15px;
+    background-color: rgba(243, 186, 47, 0.1);
+    border-radius: 10px;
+}
+
+.wallet-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+#account-info {
+    background-color: rgba(243, 186, 47, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 20px;
+    border: 1px solid #f3ba2f;
+}
+
+#transaction-status {
+    background-color: rgba(33, 150, 243, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    border: 1px solid #2196f3;
+}
+
+/* 响应式设计 */
+@media (max-width: 600px) {
+    .container {
+        padding: 15px;
+        margin: 10px;
+    }
+    
+    .wallet-buttons {
+        flex-direction: column;
+    }
+    
+    input {
+        width: 100%;
+    }
+    
+    .btn {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
